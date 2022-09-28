@@ -29,7 +29,6 @@ def apply_operation(input)
   res
 end
 
-#12+12+(12+12-8/2)/4*10
 def calculate(input)
   if input =~ /\((.*?)\)/
     exp = input.match(/\((.*?)\)/).to_s
