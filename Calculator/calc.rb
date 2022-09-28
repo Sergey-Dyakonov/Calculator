@@ -1,50 +1,20 @@
 require './numeric_expression_error'
 require './integer_violation_error'
 require './format_error'
+require './checker'
 
 @operators_pattern = /[+\-\/*]/
 
-def check_int(inp)
-  values = inp.split(@operators_pattern)
-  values.each { |val|
-    if val =~ /\d+[.,]\d+/
-      raise IntegerViolationError
-    end
-  }
-end
-
-def check_chars(inp)
-  inp.chars.each { |c|
-    unless c =~ /[+\-\/*()]|[0-9]/
-      raise NumericExpressionError
-    end
-  }
-end
-
-def check_zero_division(inp)
-  if inp.include? "/0"
-    raise ZeroDivisionError
+def remove_brackets(input)
+  if input.include?("(")
+    input = input.sub("(", "")
+    input = input.sub(")", "")
   end
-end
-
-def check_format(inp)
-  unless inp =~ /^(\(?\d+[+\-\/*]\d+\)?)$/
-    raise FormatError
-  end
-  if inp.include?("(") && !inp.include?(")") ||
-    inp.include?(")") && !inp.include?("(")
-    raise FormatError
-  end
-end
-
-def validate_input(inp)
-  check_format(inp)
-  check_int(inp)
-  check_zero_division(inp)
-  check_chars(inp)
+  input
 end
 
 def plank_calc(input)
+  input = remove_brackets(input)
   values = input.split(@operators_pattern)
   res = 0
   if input.include? "+"
@@ -59,8 +29,14 @@ def plank_calc(input)
   res
 end
 
-puts "Tests:"
-puts "12+2=#{plank_calc("12+2")}"
-puts "12-2=#{plank_calc("12-2")}"
-puts "12*2=#{plank_calc("12*2")}"
-puts "12/2=#{plank_calc("12/2")}"
+input = "12+12+12+(12-8)/4*10"
+until input =~ /^\d+$/
+  if input =~ /\(\d+[+\-\/*]\d+\)/
+    input = input.sub(/\(\d+[+\-\/*]\d+\)/, plank_calc(input.match(/\(\d+[+\-\/*]\d+\)/).to_s).to_s)
+  elsif input =~ /\d+[\/*]\d+/
+    input = input.sub(/\d+[\/*]\d+/, plank_calc(input.match(/\d+[\/*]\d+/).to_s).to_s)
+  else
+    input = input.sub(/\d+[+\-\/*]\d+/, plank_calc(input.match(/\d+[+\-\/*]\d+/).to_s).to_s)
+  end
+end
+puts input
