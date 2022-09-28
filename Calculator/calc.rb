@@ -51,7 +51,6 @@ end
 
 def calculate(input)
   if input =~ /\(/
-    # exp = input.match(/\(.*?\)/).to_s
     exp = extract_bracket_exp(input)
     input = input.sub(exp, calculate(remove_brackets(exp)))
   elsif input =~ /\d+[\/*]\d+/
