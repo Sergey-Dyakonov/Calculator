@@ -31,11 +31,21 @@ class Checker
   end
 
   private def check_format(inp)
-    unless inp =~ /^(\(?\d+[+\-\/*]\d+\)?)$/
-      raise FormatError
-    end
     if inp.include?("(") && !inp.include?(")") ||
       inp.include?(")") && !inp.include?("(")
+      raise FormatError
+    end
+    open = 0
+    close = 0
+    inp.chars.each { |c|
+      if c == "("
+        open += 1
+      end
+      if c == ")"
+        close += 1
+      end
+    }
+    if open != close
       raise FormatError
     end
   end
