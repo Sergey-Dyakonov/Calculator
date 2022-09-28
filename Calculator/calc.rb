@@ -1,36 +1,38 @@
-require './NumericExpressionError'
+require './numeric_expression_error'
+require './integer_violation_error'
+
+def validate_input(inp)
+  inp.chars.each { |c|
+    unless c.match(/[+-\/*]|[0-9]/)
+      raise NumericExpressionError
+    end
+  }
+  if inp.include? "/0"
+    raise ZeroDivisionError
+  end
+end
 
 def plank_calc(input)
   values = input.split(/[+-\/*]/)
-  res=0
+  res = 0
   if input.include? "+"
-    values.each { |val|
-      res += val.to_i
-    }
+    res = values[0].to_i + values[1].to_i
   elsif input.include? "-"
-    res = values[0].to_i
-    (1...values.length).each { |i|
-      res -= values[i].to_i
-    }
+    res = values[0].to_i - values[1].to_i
   elsif input.include? "*"
-    res = 1
-    values.each { |val|
-      res *= val.to_i
-    }
+    res = values[0].to_i * values[1].to_i
   elsif input.include? "/"
-    res = values[0].to_i
-    (1...values.length).each { |i|
-      res /= values[i].to_i
-    }
+    res = values[0].to_i / values[1].to_i
   end
   res
 end
-puts plank_calc("12+1")
-puts plank_calc("12-2")
-puts plank_calc("12*2")
-puts plank_calc("12/2")
 
-# input = gets.chomp
-# puts input
-# puts input.match(/\d+[+-\\*\/]\d+/)
-# puts input.sub! input.match(/\d+[+-\\*\/]\d+/), plankCalc(input)
+puts "Tests:"
+puts "12+2=#{plank_calc("12+2")}"
+puts "12-2=#{plank_calc("12-2")}"
+puts "12*2=#{plank_calc("12*2")}"
+puts "12/2=#{plank_calc("12/2")}"
+
+puts "Now enter expression with two operands and one of the following operators [+, -, *, /]"
+inp = gets.chomp
+puts plank_calc(inp)
