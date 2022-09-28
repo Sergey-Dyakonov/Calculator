@@ -13,10 +13,10 @@ def remove_brackets(input)
   input
 end
 
-def plank_calc(input)
+def apply_operation(input)
   input = remove_brackets(input)
   values = input.split(@operators_pattern)
-  res = 0
+  res = nil
   if input.include? "+"
     res = values[0].to_i + values[1].to_i
   elsif input.include? "-"
@@ -29,14 +29,21 @@ def plank_calc(input)
   res
 end
 
-input = "12+12+12+(12-8)/4*10"
-until input =~ /^\d+$/
-  if input =~ /\(\d+[+\-\/*]\d+\)/
-    input = input.sub(/\(\d+[+\-\/*]\d+\)/, plank_calc(input.match(/\(\d+[+\-\/*]\d+\)/).to_s).to_s)
+#12+12+(12+12-8/2)/4*10
+def calculate(input)
+  if input =~ /\((.*?)\)/
+    exp = input.match(/\((.*?)\)/).to_s
+    input = input.sub(exp, calculate(remove_brackets(exp)))
   elsif input =~ /\d+[\/*]\d+/
-    input = input.sub(/\d+[\/*]\d+/, plank_calc(input.match(/\d+[\/*]\d+/).to_s).to_s)
-  else
-    input = input.sub(/\d+[+\-\/*]\d+/, plank_calc(input.match(/\d+[+\-\/*]\d+/).to_s).to_s)
+    input = calculate(input.sub(/\d+[\/*]\d+/, apply_operation(input.match(/\d+[\/*]\d+/).to_s).to_s))
+  elsif input =~ /\d+[+-]\d+/
+    input = calculate(input.sub(/\d+[+-]\d+/, apply_operation(input.match(/\d+[+-]\d+/).to_s).to_s))
   end
+  unless input =~ /^\d+$/
+    input = calculate(input)
+  end
+  input
 end
-puts input
+
+input = "(12+12)*3/(4-2)+(12+12-8/2)/4*10"
+puts calculate(input)
