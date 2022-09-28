@@ -65,7 +65,6 @@ def calculate(input)
 end
 
 print "Enter expression: "
-# inp = gets.chomp
-inp = "(12+31)*1-2*3-(21-1+(3+3)*3)"
+inp = gets.chomp
 Checker.new.validate_input(inp)
 puts calculate(inp)
